@@ -39,6 +39,7 @@ generate.linear.models <- function(tma.medians.file, depmap.formatted.file, only
         ### YOU MIGHT HAVE MADE ERROR: DEPENDENT ON LEFT AND INDEPENDENT ON RIGHT ################
         
         LMEM <-  lm(depmap.data[ ,depmapCol] ~ tma.medians[,nfCol]);
+         ### insert null model of the nf with the age 
         
       } else {
           
