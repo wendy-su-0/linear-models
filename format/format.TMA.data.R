@@ -51,7 +51,7 @@ format.TMA.data <- function(TMA.file.name, date, TMA.data.type) {
   tma.data[tma.data == 'Cell_lines_TMA_Core_ZR-75-1-R3'] <- 'ZR751';
   
   ### SAVE DATA ####################################################################################
-  write.table(tma.data, file.path("outputs", paste(date, TMA.data.type, 'formatted.txt', sep = '-')), sep = '\t');
+  write.table(tma.data, file.path("outputs/data", paste(date, TMA.data.type, 'formatted.txt', sep = '-')), sep = '\t');
   
 };
 

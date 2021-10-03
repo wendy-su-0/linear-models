@@ -20,7 +20,7 @@ format.CCLE.data <- function(depmap.file.name, date, DepMap.data.type) {
     depmap.data <- subset(depmap.data, select = -c(depmap_id, lineage_2, lineage_3, lineage_4));
     
     ### SAVE DATA #################################################################################
-    write.table(depmap.data, file.path("outputs", paste(date, DepMap.data.type, 'formatted.txt', sep = '-')), sep = '\t');
+    write.table(depmap.data, file.path("outputs/data", paste(date, DepMap.data.type, 'formatted.txt', sep = '-')), sep = '\t');
 };
 
 ### DATA ANALYSIS #################################################################################
