@@ -1,19 +1,19 @@
 ### DESCRIPTION ###################################################################################
 
-# Fromats data from TMA. Removes rows w/o associated DepMap data
+# Formats data from TMA. Removes rows w/o associated DepMap data
 # Renames the TMA rows so it lines up with DepMap names. Saves the formatted data
 
 ### PREAMBLE ######################################################################################
 
-setwd('/Users/wsu31/OneDrive/Orsulic Lab Things/TMA data/drug/');
+setwd('/Users/wsu31/OneDrive/Desktop/R Stuff/linear-models/');
 library('tidyr');
 library('dplyr');
 
 #### FORMAT DATA #########################################################################################
 
-format.TMA.data <- function() {
+format.TMA.data <- function(TMA.file.name, date, TMA.data.type) {
   ### LOAD DATA ###################################################################################
-  tma.data <- read.csv('../Cell_lines_TMA_HE.csv');
+  tma.data <- read.csv(file.path("raw-data", TMA.file.name), fileEncoding = 'UTF-8-BOM');
   
   ### REMOVE ROWS W/O DEPMAPDATA ##########################################################################
   tma.data <- subset(tma.data, tma.data$RegionID == 'Cell_lines_TMA_Core_CaoV3-R11' | 
@@ -51,12 +51,12 @@ format.TMA.data <- function() {
   tma.data[tma.data == 'Cell_lines_TMA_Core_ZR-75-1-R3'] <- 'ZR751';
   
   ### SAVE DATA ####################################################################################
-  write.table(tma.data, '2021-07-26_NM_depmap.tma.data.formatted.txt', sep = '\t');
+  write.table(tma.data, file.path("outputs", paste(date, TMA.data.type, 'formatted.txt', sep = '-')), sep = '\t');
   
 };
 
 ### DATA ANALYSIS ##################################################################################
 
-format.TMA.data();
+format.TMA.data('Cell_lines_TMA_HE.csv', '2021.10.02', 'tma.data.seven.ovarian');
 
 ### END ############################################################################################
