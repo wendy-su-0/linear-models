@@ -1,80 +1,89 @@
+### DESCRIPTION ###################################################################################
+
+# Analyze the results from the linear models. Find the models with significance.
+
 ### PREAMBLE ######################################################################################
-library(BoutrosLab.utilities);
-library(BoutrosLab.plotting.general);
 
-### PLOTTING FUNCTIONS ############################################################################
-# VOLCANO PLOT: Volcano plots are used to show/compare the results consisting of multiple tests
-print.volcano.plot <- function(p.threshold = 0.1) {
-    
-    ### LOAD DATA #################################################################################
-    model.results <- data.frame(
-        beta = runif(n = 1000, min = -500, max = 500),
-        pval = runif(n = 1000, min = 0.000000001, max = 0.15) # The max/min values are artificial for teaching purposes only
-        );
-    
-    ### CORRECT FOR MULTIPLE TESTING ##############################################################
-    model.results$fdr <- p.adjust(model.results$pval, method = 'fdr');
-    
-    # Transform FDR values for plot
-    model.results$log.fdr <- -log10(model.results$fdr);
-    
-    ### VOLCANO PLOT #############################################################################
-    # Set the effect size here, or place it as a function argument if you want to assess different values
-    effect.size.cols <- c('beta');
-    p.cols           <- c('log.fdr');
-    
-    # Set dot color to highlight hits
-    dot.colors <- vector(length = length(model.results[, p.cols]));
-    dot.colors[model.results[, p.cols] > -log10(p.threshold) &  model.results[, effect.size.cols] > 0] <- 'dodgerblue';
-    dot.colors[model.results[, p.cols] > -log10(p.threshold) &  model.results[, effect.size.cols] < 0] <- 'darkorange1';
-    dot.colors[model.results[, p.cols] <= -log10(p.threshold)] <- 'black';
-    dot.colors[FALSE == dot.colors] <- 'black';
-    
-    # Automatic Labeling
-    interesting.rho     <- (abs(model.results[, effect.size.cols]) > 0);
-    interesting.p.value <- model.results[, p.cols] > 1;
-    interesting.points  <- interesting.rho & interesting.p.value;
-    
-    text.x <- as.numeric(as.vector(na.omit(model.results[, effect.size.cols][interesting.points])))  * runif(sum(interesting.points, na.rm = T), 0.8, 1.2); # Shuffle the location
-    text.y <- as.numeric(as.vector(na.omit(model.results[, p.cols][interesting.points]))) * runif(sum(interesting.points, na.rm = T), 0.8, 1.4);
-    text.labels <- paste0(na.omit(model.results$gene[interesting.points])); # This would be the rownames or another variable
-    
-    create.scatterplot(
-        formula = model.results[, p.cols] ~ model.results[, effect.size.cols],
-        data = model.results,
-        col = dot.colors,
-        alpha = 0.5,
-        cex = 2,
-        xlimits = c(-500, 500),
-        xat = seq(-500, 500, 250),
-        ylimits =  c(0, 2),
-        yaxis.lab = expression(1, 10^-1, 10^-2),
-        yat = c(0, 1, 2),
-        yaxis.cex = 1.5,
-        xaxis.cex = 1.5,
-        xlab.label = 'Effect size',
-        ylab.label = expression('q'),
-        xlab.cex = 1.5,
-        ylab.cex = 1.5,
-        abline.h = -log10(0.1),
-        #abline.v = c(-0.2, 0.2),
-        abline.col = 'gray20',
-        abline.lwd = 0.7,
-        abline.lty = 'dashed',
-        resolution = 200,
-        add.text = FALSE, #Change this to TRUE if you have the labels
-        text.x = text.x,
-        text.y = text.y,
-        text.labels = text.labels
-        );
-}
+setwd('/Users/wsu31/OneDrive/Orsulic Lab Things/TMA data/drug/');
+library('tidyr');
+library('dplyr');
+library('BoutrosLab.plotting.general');
 
-### DATA ANALYSIS #################################################################################
-untar('C:/Users/wsu31/Downloads/BoutrosLab.statistics.general_2.1.3.tar.gz', list = TRUE)
-install.packages('C:/Users/wsu31/Downloads/BoutrosLab.statistics.general_2.1.3.tar.gz', repos = NULL, type = 'source')
+### VOLCANO PLOT ##################################################################################
 
-library(BoutrosLab.statistics.general)
+generate.volcano.plot <- function () {
+  
+  ### LOAD DATA ###################################################################################
+  p.values <- read.table('C:/Users/wsu31/Downloads/2021-08-26_NM_p.values.txt');
+  adjusted.p.values <- read.table('2021-08-09_NM_adj.p.values.txt');
+  beta.coefficients <- read.table('C:/Users/wsu31/Downloads/2021-08-26_NM_beta.coefficients.txt');
+  #load adjusted p value
+  #load beta coefficients
+  
+  ### CREATE DATA FRAME FOR VOLCANO PLOT ##########################################################
+  volcano.plot.data <- NULL;
+  
+  for(j in 1:ncol(p.values)) {
+    
+    for(i in 1:nrow(p.values)) {
+      
+      p.val <- p.values[i,j];
+      adjusted.p.val <- adjusted.p.values[i,j];
+      beta.coef <- beta.coefficients[i,j];
+      
+      temp <- c(p.val, adjusted.p.val, beta.coef);
+      
+      volcano.plot.data <- rbind(volcano.plot.data, temp);
+      
+    };
+    
+  };
+  
+  colnames(volcano.plot.data) <- c("p.value", "adjusted.p.value", "beta.coefficient");
+  
+  volcano.plot.data <- as.data.frame(volcano.plot.data)
+  
+  write.table(volcano.plot.data, '2021-08-09_NM_volcano.plot.data.txt', sep = '\t')
+  
+  ### PREPARE VOLCANO PLOT DATA ###################################################################
+  points.x <- c();
+  points.y <- c();
+  
+  for (i in 1:527032){
+    if( (volcano.plot.data$p.value[i] <= 0.05) & (volcano.plot.data$adjusted.p.value[i] <= 0.1) ){
+      points.x <- c(points.x, volcano.plot.data$p.value[i])
+      points.y <- c(points.y, volcano.plot.data$adjusted.p.value[i])
+    }
+  }
+  
+  log.FDR <- -log10(volcano.plot.data$adjusted.p.value);
+  volcano.plot.data.log <- volcano.plot.data
+  
+  volcano.plot.data.log$adjusted.p.value <- log.FDR
+  
+  ### VOLCANO PLOT ################################################################################
+  drug.volcano.plot <- create.scatterplot(
+    formula = adjusted.p.value ~ beta.coefficient,
+    data = volcano.plot.data,
+    
+    add.points = TRUE,
+    points.x = points.x,
+    points.y = points.y,
+    points.col = "red",
+    
+  );
+  
+  drug.volcano.plot
+  
+  ?create.scatterplot
+  
+  ### SAVE PLOT ###################################################################################
+  #save volcano plot
+  
+};
 
-print.volcano.plot()
+### FDR ONLY PLATINS ##############################################################################
+only.platins <-  adjusted.p.values %>% slice(2724, 3648, 3793, 3975, 3976)
+min(only.platins)
 
 ### END ###########################################################################################
