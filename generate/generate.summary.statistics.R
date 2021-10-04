@@ -5,20 +5,20 @@
 
 ### PREAMBLE ######################################################################################
 
-setwd('/u/home/w/wendysu/project-xyang123/lm/drug/')
+setwd('/Users/wsu31/OneDrive/Desktop/R Stuff/linear-models/')
 library(tidyr);
 library(dplyr);
 library(Hmisc);
 
 ### GENERATE HISTOGRAMS ############################################################################
 
-generate.histograms <- function(file.name) {
+generate.histograms <- function(nuclear.features.file.name, date) {
   
   ### READ DATA ####################################################################################
-  tma.data.formatted <- read.table(file.name);
+  tma.data.formatted <- read.table(file.path("raw-data", nuclear.features.file.name));
   
   ### MAKE PDF #####################################################################################
-  pdf(file = 'nfHistograms.pdf', onefile = TRUE);
+  pdf(file = file.path('outputs/plots', paste(date, 'nuclear.feature.histograms.pdf', sep = '-')), onefile = TRUE);
   
   ### MAKE HISTOGRAMS ##############################################################################
   hist.data.frame(tma.data.formatted[c(-1)]);
@@ -30,11 +30,11 @@ generate.histograms <- function(file.name) {
 
 ### GENERATE SUMMARY STATISTICS ####################################################################
 
-assess.summary.statistics <- function() {
+assess.summary.statistics <- function(tma.data.name, depmap.data.name) {
   
   ### LOAD DATA ####################################################################################
-  tma.data.formatted <- read.table('2021-07-26_NM_depmap.tma.data.formatted.txt');
-  depmap.data.formatted <- read.table('2021-07-26_NM_depmap.drug.screen.data.formatted.txt');
+  tma.data.formatted <- read.table(file.path("raw-data", tma.data.name));
+  depmap.data.formatted <- read.table(file.path("raw-data", depmap.data.name));
   
   ### PREPARE MEDIAN DATAFRAME #####################################################################
   column.names <- colnames(tma.data.formatted)[2:length(tma.data.formatted)];
@@ -71,8 +71,8 @@ assess.summary.statistics <- function() {
   rownames(tma.summary.statsitics) <- colnames(tma.data.formatted[ , 2:length(tma.data.formatted)]);
   
   ### SAVE DATA ####################################################################################
-  write.table(tma.medians, '2021-07-26_NM_tma.medians.txt', sep = '\t');
-  write.table(tma.summary.statsitics, '2021-07-26_NM_tma.summary.statistics.txt', sep = '\t');
+  write.table(tma.medians, file.path("outputs/data", paste(date, 'tma.medians.txt', sep = '-')), sep = '\t');
+  write.table(tma.summary.statsitics, file.path("outputs/data", paste(date, 'tma.summary.statsitics.txt', sep = '-')), sep = '\t');
   
 };
 
