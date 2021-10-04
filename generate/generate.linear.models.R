@@ -12,7 +12,7 @@ library('lme4');
 
 ### MAKE LINEAR MODELS ############################################################################
 
-generate.linear.models <- function(tma.medians.file.name, depmap.formatted.file.name, only.ovcar) {
+generate.linear.models <- function(tma.medians.file.name, depmap.formatted.file.name, only.ovcar, fixed.effects) {
   
   ### LOAD DATA ###################################################################################
   tma.medians <- read.table(file.path('outputs.data', tma.medians.file.name));
@@ -76,35 +76,5 @@ generate.linear.models <- function(tma.medians.file.name, depmap.formatted.file.
 };
 
 ### DATA ANALYSIS ##################################################################################
-
-format.CCLE.data();
-
-LMEM <-  lm(depmap.data[ ,3648] ~ tma.medians[,100]);
-
-plot(tma.medians[,109], depmap.data[ ,3648], main = "Correlation of Chromatin Heterogenity and Cisplatin",
-     xlab = "Nuclear Feature NE-F57: Chromatin Heterogenity", ylab = "Drug Sensitivity: Cisplatin",
-     pch = 19, frame = FALSE, xlim = c(0,0.35))
-abline(lm(depmap.data[ ,3648] ~ tma.medians[,109], data = mtcars), col = "blue")
-
-?plot()
-getwd()
-
-plot(tma.medians$NH.F58, depmap.data$cisplatin..BRD.BRD.K69172251.001.08.9., main = "Cisplatin Sensitivity vs Chromatin Margination",
-     xlab = "Nuclear Feature NH-F58: Chromatin Margination", ylab = "Drug Sensitivity: Cisplatin",
-     pch = 19, frame = FALSE)
-abline(lm(depmap.data$cisplatin..BRD.BRD.K69172251.001.08.9. ~ tma.medians$NH.F58), col = "blue")
-
-### CISPLATINS ONLY ################################################################################
-p.values <- NULL;
-
-for (nfCol in 1:ncol(tma.medians)) {
-  
-   LMEM <- lm(depmap.data[ ,3648] ~ tma.medians[ ,33]);
-      
-    ### CALCUALTE P AND B #######################################################################
-    
-    p.values <- rbind(p.values, summary(LMEM$coefficients[2,4]));
-  
-};
 
 ### END ############################################################################################
