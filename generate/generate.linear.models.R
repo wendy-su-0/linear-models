@@ -5,18 +5,18 @@
 
 ### PREAMBLE ######################################################################################
 
-setwd('/u/home/w/wendysu/project-xyang123/lm/drug/');
+setwd('/Users/wsu31/OneDrive/Desktop/R Stuff/linear-models/');
 library('tidyr');
 library('dplyr');
 library('lme4');
 
 ### MAKE LINEAR MODELS ############################################################################
 
-generate.linear.models <- function(tma.medians.file, depmap.formatted.file, only.ovcar) {
+generate.linear.models <- function(tma.medians.file.name, depmap.formatted.file.name, only.ovcar) {
   
   ### LOAD DATA ###################################################################################
-  tma.medians <- read.table('2021-07-26_NM_tma.medians.txt');
-  depmap.data <- read.table('2021-07-26_NM_depmap.drug.screen.data.formatted.txt');
+  tma.medians <- read.table(file.path('outputs.data', tma.medians.file.name));
+  depmap.data <- read.table(file.path('outputs.data', depmap.formatted.file.name));
   
   ### MAKE DATAFRAME FOR MODELS ###################################################################
   cols <- colnames(tma.medians)[2:length(tma.medians)];
@@ -69,9 +69,9 @@ generate.linear.models <- function(tma.medians.file, depmap.formatted.file, only
   
   };
   
-  write.table(p.values, '2021-07-26_NM_p.values.txt', sep = '\t');
-  write.table(adjusted.p.values, '2021-07-26_NM_adjusted.p.values.txt', sep = '\t');
-  write.table(beta.coefficients, '2021-07-26_NM_beta.coefficients.txt', sep = '\t');
+  write.table(p.values, file.path("outputs/statistics", paste(date, 'p.values.txt', sep = '-')), sep = '\t');
+  write.table(adjusted.p.values, file.path("outputs/statistics", paste(date, 'adjusted.p.values.txt', sep = '-')), sep = '\t');
+  write.table(beta.coefficients, file.path("outputs/statistics", paste(date, 'beta.coefficients.txt', sep = '-')), sep = '\t');
   
 };
 
