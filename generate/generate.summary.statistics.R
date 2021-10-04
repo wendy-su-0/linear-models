@@ -15,7 +15,7 @@ library(Hmisc);
 generate.histograms <- function(nuclear.features.file.name, date) {
   
   ### READ DATA ####################################################################################
-  tma.data.formatted <- read.table(file.path("raw-data", nuclear.features.file.name));
+  tma.data.formatted <- read.table(file.path("outputs/data", nuclear.features.file.name));
   
   ### MAKE PDF #####################################################################################
   pdf(file = file.path('outputs/plots', paste(date, 'nuclear.feature.histograms.pdf', sep = '-')), onefile = TRUE);
@@ -33,8 +33,8 @@ generate.histograms <- function(nuclear.features.file.name, date) {
 assess.summary.statistics <- function(tma.data.name, depmap.data.name) {
   
   ### LOAD DATA ####################################################################################
-  tma.data.formatted <- read.table(file.path("raw-data", tma.data.name));
-  depmap.data.formatted <- read.table(file.path("raw-data", depmap.data.name));
+  tma.data.formatted <- read.table(file.path("outputs/data", tma.data.name));
+  depmap.data.formatted <- read.table(file.path("outputs/data", depmap.data.name));
   
   ### PREPARE MEDIAN DATAFRAME #####################################################################
   column.names <- colnames(tma.data.formatted)[2:length(tma.data.formatted)];
